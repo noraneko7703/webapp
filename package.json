@@ -2,7 +2,7 @@
   "name": "Esp32BleOta",
   "version": "0.0.1",
   "private": true,
-  "homepage": "https://gb88.github.io/BLEOTA",
+  "homepage": "https://noraneko7703.github.io/webapp",
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.3.0",
     "@capacitor/app": "^7.1.1",
@@ -48,9 +48,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
-    "eject": "react-scripts eject",
-    "dev": "vite"
+    "dev": "vite",
+    "deploy": "npm run build && gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -74,6 +73,7 @@
     "@capacitor/cli": "^7.4.5",
     "@types/node": "^22.15.19",
     "@vitejs/plugin-react": "^4.6.0",
+    "gh-pages": "^6.3.0",
     "vite": "^7.0.0",
     "vite-tsconfig-paths": "^4.3.2"
   },
