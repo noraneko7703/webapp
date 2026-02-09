@@ -31,4 +31,4 @@ export const OTA_RESPONSE_PAYLOAD_ERROR = 3;
 
 // App Version
 
-export const APP_VERSION = 'Version 0.06';
+export const APP_VERSION = 'Version 0.09';

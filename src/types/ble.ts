@@ -29,3 +29,25 @@ export interface BleDeviceRef {
   deviceId: string;
   name?: string;
 }
+
+export interface TemperatureData {
+  timestamp: number;
+  temperature: number;
+}
+
+export interface BatteryInfo {
+  voltage: number;
+  averageCurrent: number;
+  stateOfCharge: number;
+  batteryTemp: number;
+}
+
+export interface DashboardData {
+  temperature: number;
+  targetTemperature: number;
+  elapsedTime: number;
+  battery: BatteryInfo;
+  temperatureHistory: TemperatureData[];
+}
+
+export type ControlButton = 'power' | 'nfc' | 'heater' | 'charger' | 'ota';

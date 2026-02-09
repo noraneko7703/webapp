@@ -1,0 +1,59 @@
+.temperature-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--ion-card-background, #fff);
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.temp-readouts {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.temp-display {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  background: var(--ion-color-step-50, #f5f5f5);
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--ion-border-color, #e0e0e0);
+}
+
+.temp-value {
+  font-size: 34px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ion-text-color);
+}
+
+.temp-unit {
+  font-size: 18px;
+  font-weight: 400;
+  margin-left: 4px;
+  color: var(--ion-color-medium);
+}
+
+.temp-chart-container {
+  flex: 1;
+  min-height: 200px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chart-grid: #333;
+    --chart-axis: #888;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --chart-grid: #e0e0e0;
+    --chart-axis: #999;
+  }
+}
