@@ -33,6 +33,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           isUploading={isUploading}
           progress={progress}
           onStartUpload={onStartUpload}
+          battery={data.battery}
         />
       </div>
       <div className="dashboard-center">

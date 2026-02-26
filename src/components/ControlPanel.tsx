@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { IonIcon } from '@ionic/react';
 import {
   powerOutline,
@@ -7,7 +7,7 @@ import {
   batteryChargingOutline,
   bluetoothOutline,
 } from 'ionicons/icons';
-import { ControlButton, OtaType, UploadProgress } from '../types/ble';
+import { ControlButton, OtaType, UploadProgress, BatteryInfo } from '../types/ble';
 import { OtaPage } from '../pages/OtaPage';
 import './ControlPanel.css';
 
@@ -17,16 +17,25 @@ interface ControlPanelProps {
   isUploading: boolean;
   progress: UploadProgress;
   onStartUpload: (otaType: OtaType, file: ArrayBuffer) => void;
+  battery: BatteryInfo;
 }
 
 interface ButtonConfig {
   id: ControlButton;
   label: string;
-  icon: string;
+  icon: any;
   toggleable: boolean;
 }
 
-const buttons: ButtonConfig[] = [
+interface ButtonState {
+  power: boolean;
+  nfc: boolean;
+  heater: boolean;
+  charger: boolean;
+  ota: boolean;
+}
+
+const buttonConfigs: ButtonConfig[] = [
   { id: 'power', label: 'Power On', icon: powerOutline, toggleable: true },
   { id: 'nfc', label: 'NFC bottle time', icon: cardOutline, toggleable: false },
   { id: 'heater', label: 'Heater On', icon: flameOutline, toggleable: true },
@@ -40,48 +49,60 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   isUploading,
   progress,
   onStartUpload,
+  battery,
 }) => {
-  const [activeButtons, setActiveButtons] = useState<Set<ControlButton>>(new Set());
+  const [buttonStates, setButtonStates] = useState<ButtonState>({
+    power: battery.heaterStatus === 1,
+    nfc: false,
+    heater: battery.heaterStatus === 1,
+    charger: false,
+    ota: false,
+  });
   const [otaExpanded, setOtaExpanded] = useState(false);
 
-  const handleClick = (button: ButtonConfig) => {
-    if (button.id === 'ota') {
+  // 同步 BLE 加热状态到按钮状态
+  const heaterStateList = useMemo(() => {
+    return {
+      ...buttonStates,
+      power: battery.heaterStatus === 1,
+      heater: battery.heaterStatus === 1,
+    };
+  }, [battery.heaterStatus, buttonStates]);
+
+  const handleButtonClick = (id: ControlButton) => {
+    if (id === 'ota') {
       setOtaExpanded((prev) => !prev);
       return;
     }
 
-    if (button.toggleable) {
-      setActiveButtons((prev) => {
-        const next = new Set(prev);
-        const isActive = next.has(button.id);
-        if (isActive) {
-          next.delete(button.id);
-        } else {
-          next.add(button.id);
-        }
+    setButtonStates((prev) => {
+      const updated = { ...prev, [id]: !prev[id] };
 
-        if (button.id === 'power') onPowerToggle(!isActive);
-        if (button.id === 'heater') onHeaterToggle(!isActive);
+      if (id === 'power') onPowerToggle(!prev.power);
+      if (id === 'heater') onHeaterToggle(!prev.heater);
 
-        return next;
-      });
-    }
+      return updated;
+    });
   };
 
   return (
     <div className="control-panel">
       <div className="control-button-list">
-        {buttons.map((button) => (
+        {buttonConfigs.map((button) => (
           <button
-            key={button.id}
+            key={button.id} //
             className={`control-button ${
-              activeButtons.has(button.id) || (button.id === 'ota' && otaExpanded)
+              (button.id === 'power' || button.id === 'heater'
+                ? heaterStateList[button.id]
+                : buttonStates[button.id]) ||
+              (button.id === 'ota' && otaExpanded)
                 ? 'active'
                 : ''
             }`}
-            onClick={() => handleClick(button)}
+            onClick={() => handleButtonClick(button.id)}
+            disabled={button.id === 'power' || button.id === 'heater'}
           >
-            <IonIcon icon={button.icon} className="control-button-icon" />
+            <IonIcon icon={button.icon} className="control-button-icon"></IonIcon>
             <span className="control-button-label">{button.label}</span>
           </button>
         ))}

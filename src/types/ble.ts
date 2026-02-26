@@ -40,6 +40,8 @@ export interface BatteryInfo {
   averageCurrent: number;
   stateOfCharge: number;
   batteryTemp: number;
+  heaterStatus: number;      // 0 = off, 1 = on
+  heaterTemperature: number; // °C
 }
 
 export interface DashboardData {
