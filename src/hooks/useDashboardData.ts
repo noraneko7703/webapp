@@ -18,13 +18,20 @@ function generateMockTemperature(elapsed: number): number {
   return Math.max(25, Math.min(160, response));
 }
 
-function generateMockBattery(): BatteryInfo {
-  return {
-    voltage: 3814 + Math.floor(Math.random() * 20 - 10),
-    averageCurrent: 140 + Math.floor(Math.random() * 10 - 5),
-    stateOfCharge: 30,
-    batteryTemp: 30 + Math.floor(Math.random() * 2),
-  };
+/**
+ * 解析 BLE Battery Notification (8 bytes, Little-Endian, 全部 uint16)
+ * [0-1] uint16 voltage (mV)
+ * [2-3] uint16 averageCurrent (mA)
+ * [4-5] uint16 stateOfCharge (%)
+ * [6-7] uint16 temperature (0.1°C, e.g. 305 = 30.5°C)
+ */
+export function parseBatteryNotification(value: DataView): BatteryInfo {
+  const voltage = value.getUint16(0, true);
+  const averageCurrent = value.getInt16(2, true);
+  const stateOfCharge = value.getUint16(4, true);
+  const batteryTemp = value.getUint16(6, true) / 10;
+
+  return { voltage, averageCurrent, stateOfCharge, batteryTemp };
 }
 
 export function useDashboardData() {
@@ -32,13 +39,17 @@ export function useDashboardData() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [temperature, setTemperature] = useState(25);
   const [battery, setBattery] = useState<BatteryInfo>({
-    voltage: 3814,
-    averageCurrent: 140,
-    stateOfCharge: 30,
-    batteryTemp: 30,
+    voltage: 0,
+    averageCurrent: 0,
+    stateOfCharge: 0,
+    batteryTemp: 0,
   });
   const [temperatureHistory, setTemperatureHistory] = useState<TemperatureData[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const updateBattery = useCallback((info: BatteryInfo) => {
+    setBattery(info);
+  }, []);
 
   const startHeater = useCallback(() => {
     setIsHeaterActive(true);
@@ -67,7 +78,6 @@ export function useDashboardData() {
           const updated = [...hist, { timestamp: now, temperature: temp }];
           return updated.slice(-MAX_HISTORY_POINTS);
         });
-        setBattery(generateMockBattery());
         return next;
       });
     }, MOCK_UPDATE_INTERVAL_MS);
@@ -86,6 +96,7 @@ export function useDashboardData() {
       temperatureHistory,
     },
     isHeaterActive,
+    updateBattery,
     startHeater,
     stopHeater,
   };

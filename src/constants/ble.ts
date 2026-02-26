@@ -2,6 +2,7 @@
 export const BLE_SERVICE_UUID = '00008018-0000-1000-8000-00805f9b34fb';
 export const BLE_FIRMWARE_CHAR_UUID = '00008020-0000-1000-8000-00805f9b34fb';
 export const BLE_COMMAND_CHAR_UUID = '00008022-0000-1000-8000-00805f9b34fb';
+export const BLE_BATTERY_CHAR_UUID = '00008024-0000-1000-8000-00805f9b34fb';
 
 // Device Information Service (DIS) UUIDs
 export const DIS_SERVICE_UUID = 0x180a;
@@ -31,4 +32,4 @@ export const OTA_RESPONSE_PAYLOAD_ERROR = 3;
 
 // App Version
 
-export const APP_VERSION = 'Version 0.09';
+export const APP_VERSION = 'Version 0.04';

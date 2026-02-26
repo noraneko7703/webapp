@@ -1,45 +1,35 @@
 import { useCallback } from 'react';
-import { useDashboardData } from '../hooks/useDashboardData';
 import { ControlPanel } from './ControlPanel';
 import { TemperaturePanel } from './TemperaturePanel';
 import { BatteryPanel } from './BatteryPanel';
-import { OtaType, UploadProgress } from '../types/ble';
+import { OtaType, UploadProgress, DashboardData } from '../types/ble';
 import './Dashboard.css';
 
 interface DashboardProps {
+  data: DashboardData;
   onStartUpload: (otaType: OtaType, file: ArrayBuffer) => void;
   isUploading: boolean;
   progress: UploadProgress;
+  onHeaterToggle: (active: boolean) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
+  data,
   onStartUpload,
   isUploading,
   progress,
+  onHeaterToggle,
 }) => {
-  const { data, startHeater, stopHeater } = useDashboardData();
-
   const handlePowerToggle = useCallback((active: boolean) => {
     console.log('Power:', active ? 'ON' : 'OFF');
   }, []);
-
-  const handleHeaterToggle = useCallback(
-    (active: boolean) => {
-      if (active) {
-        startHeater();
-      } else {
-        stopHeater();
-      }
-    },
-    [startHeater, stopHeater]
-  );
 
   return (
     <div className="dashboard-grid">
       <div className="dashboard-left">
         <ControlPanel
           onPowerToggle={handlePowerToggle}
-          onHeaterToggle={handleHeaterToggle}
+          onHeaterToggle={onHeaterToggle}
           isUploading={isUploading}
           progress={progress}
           onStartUpload={onStartUpload}

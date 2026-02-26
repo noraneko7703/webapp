@@ -8,10 +8,12 @@ import {
   IonToolbar,
   IonButton,
   IonButtons,
+  IonAlert,
 } from '@ionic/react';
 
 import { useBleConnection } from '../hooks/useBleConnection';
 import { useFirmwareUpload } from '../hooks/useFirmwareUpload';
+import { useDashboardData, parseBatteryNotification } from '../hooks/useDashboardData';
 import { StatusCard } from '../components/StatusCard';
 import { Dashboard } from '../components/Dashboard';
 import { OtaType } from '../types/ble';
@@ -20,10 +22,12 @@ import { APP_VERSION } from '../constants/ble';
 const HomePage: React.FC = () => {
   const {
     isConnected,
+    disconnectedUnexpectedly,
     deviceInfo,
     deviceRef,
     connect,
     disconnect,
+    clearDisconnectAlert,
   } = useBleConnection();
 
   const {
@@ -38,6 +42,27 @@ const HomePage: React.FC = () => {
     resetStatus,
   } = useFirmwareUpload();
 
+  const { data: dashboardData, updateBattery, startHeater, stopHeater } = useDashboardData();
+
+  const handleBatteryNotification = useCallback(
+    (value: DataView) => {
+      const info = parseBatteryNotification(value);
+      updateBattery(info);
+    },
+    [updateBattery]
+  );
+
+  const handleHeaterToggle = useCallback(
+    (active: boolean) => {
+      if (active) {
+        startHeater();
+      } else {
+        stopHeater();
+      }
+    },
+    [startHeater, stopHeater]
+  );
+
   const handleScanClick = useCallback(async () => {
     if (isConnected) {
       await disconnect();
@@ -46,11 +71,11 @@ const HomePage: React.FC = () => {
     resetStatus();
 
     try {
-      await connect(parseFirmwareNotification, parseCommandNotification);
+      await connect(parseFirmwareNotification, parseCommandNotification, handleBatteryNotification);
     } catch (error) {
       console.error('Scan error:', error);
     }
-  }, [isConnected, disconnect, resetStatus, connect, parseFirmwareNotification, parseCommandNotification]);
+  }, [isConnected, disconnect, resetStatus, connect, parseFirmwareNotification, parseCommandNotification, handleBatteryNotification]);
 
   const handleDisconnectClick = useCallback(async () => {
     await disconnect();
@@ -68,9 +93,16 @@ const HomePage: React.FC = () => {
 
   return (
     <IonPage>
+      <IonAlert
+        isOpen={disconnectedUnexpectedly}
+        header="藍牙已斷線"
+        message="與裝置的藍牙連線已中斷，請重新連線。"
+        buttons={['確定']}
+        onDidDismiss={clearDisconnectAlert}
+      />
       <IonHeader>
         <IonToolbar>
-          <IonTitle>{isConnected ? deviceInfo.name : 'BLE Dashboard'}</IonTitle>
+          <IonTitle>{isConnected ? deviceInfo.name : 'Scan for nearby device'}</IonTitle>
           <IonButtons slot="end">
             {!isConnected && (
               <IonButton onClick={handleScanClick}>Scan</IonButton>
@@ -89,9 +121,11 @@ const HomePage: React.FC = () => {
       {isConnected && (
         <IonContent>
           <Dashboard
+            data={dashboardData}
             onStartUpload={handleStartUpload}
             isUploading={isUploading}
             progress={progress}
+            onHeaterToggle={handleHeaterToggle}
           />
         </IonContent>
       )}

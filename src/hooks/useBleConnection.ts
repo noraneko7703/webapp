@@ -6,6 +6,7 @@ import {
   BLE_SERVICE_UUID,
   BLE_FIRMWARE_CHAR_UUID,
   BLE_COMMAND_CHAR_UUID,
+  BLE_BATTERY_CHAR_UUID,
   DIS_SERVICE_UUID,
   DIS_MODEL_NUMBER_UUID,
   DIS_SERIAL_NUMBER_UUID,
@@ -17,14 +18,17 @@ import {
 
 interface UseBleConnectionReturn {
   isConnected: boolean;
+  disconnectedUnexpectedly: boolean;
   deviceInfo: DeviceInfo;
   hasDeviceInfo: boolean;
   deviceRef: React.MutableRefObject<BleDeviceRef | null>;
   connect: (
     onFirmwareNotification: (value: DataView) => void,
-    onCommandNotification: (value: DataView) => void
+    onCommandNotification: (value: DataView) => void,
+    onBatteryNotification: (value: DataView) => void
   ) => Promise<void>;
   disconnect: () => Promise<void>;
+  clearDisconnectAlert: () => void;
 }
 
 const initialDeviceInfo: DeviceInfo = {
@@ -38,13 +42,23 @@ const initialDeviceInfo: DeviceInfo = {
 
 export function useBleConnection(): UseBleConnectionReturn {
   const [isConnected, setIsConnected] = useState(false);
+  const [disconnectedUnexpectedly, setDisconnectedUnexpectedly] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>(initialDeviceInfo);
   const [hasDeviceInfo, setHasDeviceInfo] = useState(false);
   const deviceRef = useRef<BleDeviceRef | null>(null);
+  const userDisconnectRef = useRef(false);
+
+  const clearDisconnectAlert = useCallback(() => {
+    setDisconnectedUnexpectedly(false);
+  }, []);
 
   const onDisconnect = useCallback((deviceId: string) => {
     console.log(`device ${deviceId} disconnected`);
     setIsConnected(false);
+    if (!userDisconnectRef.current) {
+      setDisconnectedUnexpectedly(true);
+    }
+    userDisconnectRef.current = false;
   }, []);
 
   const readDeviceInfoCharacteristic = async (
@@ -68,7 +82,8 @@ export function useBleConnection(): UseBleConnectionReturn {
   const connect = useCallback(
     async (
       onFirmwareNotification: (value: DataView) => void,
-      onCommandNotification: (value: DataView) => void
+      onCommandNotification: (value: DataView) => void,
+      onBatteryNotification: (value: DataView) => void
     ) => {
       try {
         setIsConnected(false);
@@ -106,6 +121,13 @@ export function useBleConnection(): UseBleConnectionReturn {
           onCommandNotification
         );
 
+        await BleClient.startNotifications(
+          clientDevice.deviceId,
+          BLE_SERVICE_UUID,
+          BLE_BATTERY_CHAR_UUID,
+          onBatteryNotification
+        );
+
         // Read device information
         const [model, serialNumber, swVersion, hwVersion, manufacturer] =
           await Promise.all([
@@ -139,6 +161,7 @@ export function useBleConnection(): UseBleConnectionReturn {
   );
 
   const disconnect = useCallback(async () => {
+    userDisconnectRef.current = true;
     if (deviceRef.current) {
       await BleClient.disconnect(deviceRef.current.deviceId);
       deviceRef.current = null;
@@ -150,10 +173,12 @@ export function useBleConnection(): UseBleConnectionReturn {
 
   return {
     isConnected,
+    disconnectedUnexpectedly,
     deviceInfo,
     hasDeviceInfo,
     deviceRef,
     connect,
     disconnect,
+    clearDisconnectAlert,
   };
 }

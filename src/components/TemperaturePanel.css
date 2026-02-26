@@ -42,6 +42,9 @@
 .temp-chart-container {
   flex: 1;
   min-height: 200px;
+  min-width: 0;
+  width: 100%;
+  position: relative;
 }
 
 @media (prefers-color-scheme: dark) {
