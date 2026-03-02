@@ -1,0 +1,65 @@
+.nfc-panel {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  gap: 16px;
+}
+
+/* 標題列 */
+.nfc-title-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.nfc-title {
+  font-size: 40px;
+  font-weight: 600;
+  color: #1c1c1e;
+  line-height: 1.2;
+}
+
+.nfc-subtitle {
+  font-size: 28px;
+  color: #aeaeb2;
+}
+
+/* UID 卡片 */
+.nfc-uid-card {
+  background: #f2f2f7;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  gap: 12px;
+}
+
+.nfc-uid-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nfc-uid-label {
+  font-size: 32px;
+  font-weight: 500;
+  color: #3c3c43;
+}
+
+.nfc-uid-value {
+  font-size: 30px;
+  font-weight: 600;
+  font-family: 'Courier New', Courier, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+  color: #aeaeb2;
+  text-align: center;
+}
+
+.nfc-uid-value.has-tag {
+  color: #1c1c1e;
+}

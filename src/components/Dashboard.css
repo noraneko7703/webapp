@@ -9,8 +9,14 @@
 }
 
 .dashboard-left,
-.dashboard-center,
+.dashboard-center {
+  min-height: 0;
+}
+
 .dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   min-height: 0;
 }
 

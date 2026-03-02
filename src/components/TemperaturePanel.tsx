@@ -37,7 +37,7 @@ function YAxisTick({ x, y, payload }: { x?: number; y?: number; payload?: { valu
       textAnchor="end"
       fill={is110 ? '#ff3b30' : 'var(--chart-axis, #aeaeb2)'}
       fontWeight={is110 ? 700 : 400}
-      fontSize={is110 ? 40 : 30}
+      fontSize={is110 ? 30 : 25}
     >
       {val}°
     </text>
@@ -87,7 +87,7 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
               dataKey="index"
               type="number"
               domain={[0, maxX]}
-              tick={{ fontSize: 30, fill: 'var(--chart-axis, #aeaeb2)' }}
+              tick={{ fontSize: 25, fill: 'var(--chart-axis, #aeaeb2)' }}
               stroke="var(--chart-axis, #aeaeb2)"
               axisLine={false}
               tickLine={false}
@@ -96,6 +96,7 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
               domain={[0, 160]}
               ticks={[0, 40, 80, 110, 120, 160]}
               tick={<YAxisTick />}
+              minTickGap={-1}
               stroke="var(--chart-axis, #aeaeb2)"
               axisLine={false}
               tickLine={false}

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { BatteryInfo, TemperatureData } from '../types/ble';
 
 const MOCK_UPDATE_INTERVAL_MS = 1000;
-const MAX_HISTORY_POINTS = 1500;
+const MAX_HISTORY_POINTS = 3000;
 
 /**
  * 解析 BLE Battery Notification (12 bytes, Little-Endian)
@@ -21,7 +21,17 @@ export function parseBatteryNotification(value: DataView): BatteryInfo {
   const heaterStatus = value.getUint16(8, true);
   const heaterTemperature = value.getUint16(10, true) / 10;
 
-  return { voltage, averageCurrent, stateOfCharge, batteryTemp, heaterStatus, heaterTemperature };
+  // [12-19] NFC-V UID (8 bytes)
+  let nfcUid = '';
+  if (value.byteLength >= 20) {
+    const parts: string[] = [];
+    for (let i = 12; i < 20; i++) {
+      parts.push(value.getUint8(i).toString(16).padStart(2, '0').toUpperCase());
+    }
+    nfcUid = parts.join('');
+  }
+
+  return { voltage, averageCurrent, stateOfCharge, batteryTemp, heaterStatus, heaterTemperature, nfcUid };
 }
 
 export function useDashboardData() {
@@ -35,6 +45,7 @@ export function useDashboardData() {
     batteryTemp: 0,
     heaterStatus: 0,
     heaterTemperature: 25,
+    nfcUid: '',
   });
   const [temperatureHistory, setTemperatureHistory] = useState<TemperatureData[]>([]);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -61,6 +72,12 @@ export function useDashboardData() {
     else if (prevStatus === 1 && currentStatus === 0) {
       isHeaterActiveRef.current = false;
       setIsHeaterActive(false);
+    }
+
+    // Stop timer when temperature reaches 110°C
+    if (info.heaterTemperature >= 110 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
 
     // Always update temperature history when data is received from BLE device (0x8024)

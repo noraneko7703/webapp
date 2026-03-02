@@ -1,17 +1,7 @@
-import { useState } from 'react';
-import {
-  IonCard,
-  IonCardContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonSegment,
-  IonSegmentButton,
-  IonLabel,
-  IonButton,
-} from '@ionic/react';
-import ProgressBar from '@ramonak/react-progress-bar';
+import { useRef, useState } from 'react';
+import { IonCard, IonCardContent } from '@ionic/react';
 import { OtaType, UploadProgress } from '../types/ble';
+import './OtaPage.css';
 
 interface OtaPageProps {
   isUploading: boolean;
@@ -19,90 +9,100 @@ interface OtaPageProps {
   onStartUpload: (otaType: OtaType, file: ArrayBuffer) => void;
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 export const OtaPage: React.FC<OtaPageProps> = ({
   isUploading,
   progress,
   onStartUpload,
 }) => {
-  const [otaType, setOtaType] = useState<OtaType>('undefined');
+  const otaType: OtaType = 'app';
   const [otaFile, setOtaFile] = useState<ArrayBuffer | null>(null);
-  const [isFileLoaded, setIsFileLoaded] = useState(false);
-
-  const handleSelectionChange = (event: CustomEvent) => {
-    setOtaType(event.detail.value as OtaType);
-  };
+  const [fileName, setFileName] = useState<string>('');
+  const [fileSize, setFileSize] = useState<number>(0);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
-
     const sourceFile = event.target.files[0];
-    const reader = new FileReader();
+    setFileName(sourceFile.name);
+    setFileSize(sourceFile.size);
 
+    const reader = new FileReader();
     reader.addEventListener('load', () => {
       setOtaFile(reader.result as ArrayBuffer);
-      setIsFileLoaded(true);
     });
-
     reader.readAsArrayBuffer(sourceFile);
   };
 
   const handleStartClick = () => {
-    if (otaFile && otaType !== 'undefined') {
+    if (otaFile) {
       onStartUpload(otaType, otaFile);
-      setIsFileLoaded(false);
     }
   };
 
   return (
-    <IonCard>
+    <IonCard className="ota-card">
       <IonCardContent>
-        {!isUploading && (
-          <IonGrid>
-            <IonRow>
-              <IonSegment value={otaType} onIonChange={handleSelectionChange}>
-                <IonSegmentButton value="app">
-                  <IonLabel>App</IonLabel>
-                </IonSegmentButton>
-                <IonSegmentButton value="spiffs">
-                  <IonLabel>SPIFFS</IonLabel>
-                </IonSegmentButton>
-              </IonSegment>
-            </IonRow>
-          </IonGrid>
-        )}
+        {isUploading ? (
+          <div className="ota-progress-wrap">
+            <div className="ota-progress-header">
+              <span className="ota-progress-label">更新中...</span>
+              <span className="ota-progress-speed">{progress.speed.toFixed(1)} kB/s</span>
+            </div>
+            <div className="ota-progress-bar-track">
+              <div
+                className="ota-progress-bar-fill"
+                style={{ width: `${progress.percent}%` }}
+              />
+            </div>
+            <div className="ota-progress-percent">{progress.percent}%</div>
+          </div>
+        ) : (
+          <>
+            {/* Hidden type selector — defaults to 'app'. Re-enable to expose SPIFFS:
+            <IonSegment value={otaType} onIonChange={...}>
+              <IonSegmentButton value="app"><IonLabel>App</IonLabel></IonSegmentButton>
+              <IonSegmentButton value="spiffs"><IonLabel>SPIFFS</IonLabel></IonSegmentButton>
+            </IonSegment>
+            */}
 
-        {(otaType !== 'undefined' || isUploading) && (
-          <IonGrid>
-            <IonRow className="ion-justify-content-center ion-align-items-center">
-              <IonCol size="12" sizeMd="6" sizeLg="4">
-                {!isUploading && <input type="file" onChange={handleFileChange} />}
-              </IonCol>
-            </IonRow>
+            <input
+              ref={inputRef}
+              type="file"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
 
-            <IonRow className="ion-justify-content-center ion-align-items-center">
-              {isUploading && <IonLabel>{progress.speed.toFixed(2)} kB/s</IonLabel>}
-            </IonRow>
+            <div
+              className={`ota-drop-zone${otaFile ? ' has-file' : ''}`}
+              onClick={() => inputRef.current?.click()}
+            >
+              <div className="ota-drop-icon">{otaFile ? '✅' : '📂'}</div>
+              <p className="ota-drop-title">
+                {otaFile ? 'Firmware Uploaded' : 'Select a Firmware File'}
+              </p>
+              {!otaFile && <p className="ota-drop-hint">.bin</p>}
+            </div>
 
-            <IonRow className="ion-justify-content-center ion-align-items-center">
-              <IonCol>
-                {isUploading && (
-                  <ProgressBar
-                    completed={progress.percent}
-                    labelAlignment="center"
-                    bgColor="#3880ff"
-                  />
-                )}
-              </IonCol>
-            </IonRow>
+            {otaFile && (
+              <div className="ota-file-info">
+                <span className="ota-file-icon">📄</span>
+                <span className="ota-file-name">{fileName}</span>
+                <span className="ota-file-size">{formatBytes(fileSize)}</span>
+              </div>
+            )}
 
-            <IonRow>
-              <IonCol>
-                {isFileLoaded && !isUploading && (
-                  <IonButton onClick={handleStartClick}>Start</IonButton>
-                )}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+            {otaFile && (
+              <button className="ota-start-btn" onClick={handleStartClick}>
+                開始更新
+              </button>
+            )}
+          </>
         )}
       </IonCardContent>
     </IonCard>

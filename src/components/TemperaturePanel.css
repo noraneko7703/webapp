@@ -35,7 +35,7 @@
 }
 
 .temp-value {
-  font-size: 100px;
+  font-size: 90px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -44,7 +44,7 @@
 }
 
 .temp-unit {
-  font-size: 48px;
+  font-size: 50px;
   font-weight: 300;
   color: #aeaeb2;
   align-self: flex-start;
@@ -52,7 +52,7 @@
 }
 
 .temp-timer {
-  font-size: 100px;
+  font-size: 90px;
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   color: #8e8e93;

@@ -42,6 +42,7 @@ export interface BatteryInfo {
   batteryTemp: number;
   heaterStatus: number;      // 0 = off, 1 = on
   heaterTemperature: number; // °C
+  nfcUid: string;            // NFC-V UID hex string (e.g. "E00208036D81D6AD")
 }
 
 export interface DashboardData {

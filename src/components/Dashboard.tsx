@@ -1,6 +1,7 @@
 import { ControlPanel } from './ControlPanel';
 import { TemperaturePanel } from './TemperaturePanel';
 import { BatteryPanel } from './BatteryPanel';
+import { NfcPanel } from './NfcPanel';
 import { OtaType, UploadProgress, DashboardData } from '../types/ble';
 import './Dashboard.css';
 
@@ -47,6 +48,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
       <div className="dashboard-right">
         <BatteryPanel battery={data.battery} />
+        <NfcPanel nfcUid={data.battery.nfcUid} />
       </div>
     </div>
   );
