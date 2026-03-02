@@ -91,9 +91,9 @@ const HomePage: React.FC = () => {
     <IonPage>
       <IonAlert
         isOpen={disconnectedUnexpectedly}
-        header="藍牙已斷線"
-        message="與裝置的藍牙連線已中斷，請重新連線。"
-        buttons={['確定']}
+        header="Bluetooth Disconnected"
+        message="The Bluetooth connection to the device was lost. Please reconnect."
+        buttons={['OK']}
         onDidDismiss={clearDisconnectAlert}
       />
 
@@ -101,14 +101,14 @@ const HomePage: React.FC = () => {
         <div className="app-header-left">
           <span className={`connection-dot ${isConnected ? 'connected' : ''}`} />
           <span className="device-name">
-            {isConnected ? deviceInfo.name : '尋找裝置中…'}
+            {isConnected ? deviceInfo.name : 'Searching for device…'}
           </span>
         </div>
         <div className="app-header-right">
           <span className="app-version">{APP_VERSION}</span>
           {isConnected && (
             <button className="disconnect-btn" onClick={handleDisconnectClick}>
-              中斷連線
+              Disconnect
             </button>
           )}
         </div>

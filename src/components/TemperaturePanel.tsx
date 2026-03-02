@@ -44,14 +44,17 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
   return (
     <div className="temperature-panel">
       <div className="temp-hero">
-        <span className="temp-label">溫度</span>
-        <div className="temp-main">
-          <span className="temp-value" style={{ color: getTempColor(temperature) }}>
-            {Math.round(temperature)}
-          </span>
-          <span className="temp-unit">&deg;C</span>
+        <div className="temp-card">
+          <div className="temp-main">
+            <span className="temp-value" style={{ color: getTempColor(temperature) }}>
+              {Math.round(temperature)}
+            </span>
+            <span className="temp-unit">&deg;C</span>
+          </div>
         </div>
-        <div className="temp-timer">{formatTime(elapsedTime)}</div>
+        <div className="temp-card">
+          <div className="temp-timer">{formatTime(elapsedTime)}</div>
+        </div>
       </div>
       <div className="temp-chart-container">
         <ResponsiveContainer width="100%" height="100%">

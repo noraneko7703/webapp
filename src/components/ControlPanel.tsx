@@ -48,10 +48,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   }, [isConnected]);
 
   const statusItems = useMemo<StatusItem[]>(() => [
-    { id: 'power',   label: 'Power',   icon: powerOutline,          active: battery.heaterStatus === 1 },
-    { id: 'nfc',     label: 'NFC',     icon: cardOutline,            active: false },
-    { id: 'heater',  label: 'Heater',  icon: flameOutline,           active: battery.heaterStatus === 1 },
-    { id: 'charger', label: 'Charger', icon: batteryChargingOutline, active: false },
+    { id: 'power',   label: battery.heaterStatus === 1 ? 'Power ON'   : 'Power OFF',   icon: powerOutline,          active: battery.heaterStatus === 1 },
+    { id: 'nfc',     label: 'NFC OFF',                                                  icon: cardOutline,            active: false },
+    { id: 'heater',  label: battery.heaterStatus === 1 ? 'Heater ON'  : 'Heater OFF',  icon: flameOutline,           active: battery.heaterStatus === 1 },
+    { id: 'charger', label: 'Charger OFF',                                              icon: batteryChargingOutline, active: false },
     { id: 'ota',     label: isScanning ? 'Scanning...' : isConnected ? 'Bluetooth ON' : 'Bluetooth OFF', icon: bluetoothOutline, active: isConnected, scanning: isScanning },
   ], [battery.heaterStatus, otaExpanded, isConnected, isScanning]);
 
