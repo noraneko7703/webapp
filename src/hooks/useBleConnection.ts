@@ -18,6 +18,7 @@ import {
 
 interface UseBleConnectionReturn {
   isConnected: boolean;
+  isScanning: boolean;
   disconnectedUnexpectedly: boolean;
   deviceInfo: DeviceInfo;
   hasDeviceInfo: boolean;
@@ -42,6 +43,7 @@ const initialDeviceInfo: DeviceInfo = {
 
 export function useBleConnection(): UseBleConnectionReturn {
   const [isConnected, setIsConnected] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
   const [disconnectedUnexpectedly, setDisconnectedUnexpectedly] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo>(initialDeviceInfo);
   const [hasDeviceInfo, setHasDeviceInfo] = useState(false);
@@ -87,6 +89,7 @@ export function useBleConnection(): UseBleConnectionReturn {
     ) => {
       try {
         setIsConnected(false);
+        setIsScanning(true);
         setHasDeviceInfo(false);
         setDeviceInfo(initialDeviceInfo);
 
@@ -151,8 +154,10 @@ export function useBleConnection(): UseBleConnectionReturn {
         if (model || serialNumber || manufacturer || hwVersion || swVersion) {
           setHasDeviceInfo(true);
         }
+        setIsScanning(false);
         setIsConnected(true);
       } catch (error) {
+        setIsScanning(false);
         console.error('Connection error:', error);
         throw error;
       }
@@ -173,6 +178,7 @@ export function useBleConnection(): UseBleConnectionReturn {
 
   return {
     isConnected,
+    isScanning,
     disconnectedUnexpectedly,
     deviceInfo,
     hasDeviceInfo,

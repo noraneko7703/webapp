@@ -1,13 +1,7 @@
 import { useCallback } from 'react';
 import {
   IonContent,
-  IonHeader,
   IonPage,
-  IonTitle,
-  IonFooter,
-  IonToolbar,
-  IonButton,
-  IonButtons,
   IonAlert,
 } from '@ionic/react';
 
@@ -18,10 +12,12 @@ import { StatusCard } from '../components/StatusCard';
 import { Dashboard } from '../components/Dashboard';
 import { OtaType } from '../types/ble';
 import { APP_VERSION } from '../constants/ble';
+import './HomePage.css';
 
 const HomePage: React.FC = () => {
   const {
     isConnected,
+    isScanning,
     disconnectedUnexpectedly,
     deviceInfo,
     deviceRef,
@@ -100,41 +96,38 @@ const HomePage: React.FC = () => {
         buttons={['確定']}
         onDidDismiss={clearDisconnectAlert}
       />
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>{isConnected ? deviceInfo.name : 'Scan for nearby device'}</IonTitle>
-          <IonButtons slot="end">
-            {!isConnected && (
-              <IonButton onClick={handleScanClick}>Scan</IonButton>
-            )}
-            {isConnected && (
-              <IonButton onClick={handleDisconnectClick} color="danger">
-                Disconnect
-              </IonButton>
-            )}
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
+
+      <div className="app-header">
+        <div className="app-header-left">
+          <span className={`connection-dot ${isConnected ? 'connected' : ''}`} />
+          <span className="device-name">
+            {isConnected ? deviceInfo.name : '尋找裝置中…'}
+          </span>
+        </div>
+        <div className="app-header-right">
+          <span className="app-version">{APP_VERSION}</span>
+          {isConnected && (
+            <button className="disconnect-btn" onClick={handleDisconnectClick}>
+              中斷連線
+            </button>
+          )}
+        </div>
+      </div>
 
       {showStatus && <StatusCard status={status} barStatus={barStatus} />}
 
-      {isConnected && (
-        <IonContent>
-          <Dashboard
-            data={dashboardData}
-            onStartUpload={handleStartUpload}
-            isUploading={isUploading}
-            progress={progress}
-            onHeaterToggle={handleHeaterToggle}
-          />
-        </IonContent>
-      )}
-
-      <IonFooter>
-        <IonToolbar>
-          <IonTitle>{APP_VERSION}</IonTitle>
-        </IonToolbar>
-      </IonFooter>
+      <IonContent>
+        <Dashboard
+          data={dashboardData}
+          onStartUpload={handleStartUpload}
+          isUploading={isUploading}
+          progress={progress}
+          onHeaterToggle={handleHeaterToggle}
+          isConnected={isConnected}
+          isScanning={isScanning}
+          onScan={handleScanClick}
+        />
+      </IonContent>
     </IonPage>
   );
 };

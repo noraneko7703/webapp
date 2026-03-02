@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { ControlPanel } from './ControlPanel';
 import { TemperaturePanel } from './TemperaturePanel';
 import { BatteryPanel } from './BatteryPanel';
@@ -11,6 +10,9 @@ interface DashboardProps {
   isUploading: boolean;
   progress: UploadProgress;
   onHeaterToggle: (active: boolean) => void;
+  isConnected: boolean;
+  isScanning: boolean;
+  onScan: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -18,22 +20,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onStartUpload,
   isUploading,
   progress,
-  onHeaterToggle,
+  isConnected,
+  isScanning,
+  onScan,
 }) => {
-  const handlePowerToggle = useCallback((active: boolean) => {
-    console.log('Power:', active ? 'ON' : 'OFF');
-  }, []);
-
   return (
     <div className="dashboard-grid">
       <div className="dashboard-left">
         <ControlPanel
-          onPowerToggle={handlePowerToggle}
-          onHeaterToggle={onHeaterToggle}
           isUploading={isUploading}
           progress={progress}
           onStartUpload={onStartUpload}
           battery={data.battery}
+          isConnected={isConnected}
+          isScanning={isScanning}
+          onScan={onScan}
         />
       </div>
       <div className="dashboard-center">

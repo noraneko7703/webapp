@@ -4,6 +4,15 @@
 /// <reference types="react" />
 /// <reference types="react-dom" />
 
+// Fix for @ionic/react requiring placeholder / pointer capture props on all components
+declare namespace React {
+  interface HTMLAttributes<T> {
+    placeholder?: string;
+    onPointerEnterCapture?: React.PointerEventHandler<T>;
+    onPointerLeaveCapture?: React.PointerEventHandler<T>;
+  }
+}
+
 declare module "*.avif" {
 	const src: string;
 	export default src;

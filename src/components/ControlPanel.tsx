@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import {
   powerOutline,
@@ -7,107 +7,89 @@ import {
   batteryChargingOutline,
   bluetoothOutline,
 } from 'ionicons/icons';
-import { ControlButton, OtaType, UploadProgress, BatteryInfo } from '../types/ble';
+import { OtaType, UploadProgress, BatteryInfo } from '../types/ble';
 import { OtaPage } from '../pages/OtaPage';
 import './ControlPanel.css';
 
 interface ControlPanelProps {
-  onPowerToggle: (active: boolean) => void;
-  onHeaterToggle: (active: boolean) => void;
   isUploading: boolean;
   progress: UploadProgress;
   onStartUpload: (otaType: OtaType, file: ArrayBuffer) => void;
   battery: BatteryInfo;
+  isConnected: boolean;
+  isScanning: boolean;
+  onScan: () => void;
 }
 
-interface ButtonConfig {
-  id: ControlButton;
+interface StatusItem {
+  id: string;
   label: string;
   icon: any;
-  toggleable: boolean;
+  active: boolean;
+  scanning?: boolean;
 }
-
-interface ButtonState {
-  power: boolean;
-  nfc: boolean;
-  heater: boolean;
-  charger: boolean;
-  ota: boolean;
-}
-
-const buttonConfigs: ButtonConfig[] = [
-  { id: 'power', label: 'Power On', icon: powerOutline, toggleable: true },
-  { id: 'nfc', label: 'NFC bottle time', icon: cardOutline, toggleable: false },
-  { id: 'heater', label: 'Heater On', icon: flameOutline, toggleable: true },
-  { id: 'charger', label: 'Charger On', icon: batteryChargingOutline, toggleable: true },
-  { id: 'ota', label: 'Over-the-Air', icon: bluetoothOutline, toggleable: false },
-];
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
-  onPowerToggle,
-  onHeaterToggle,
   isUploading,
   progress,
   onStartUpload,
   battery,
+  isConnected,
+  isScanning,
+  onScan,
 }) => {
-  const [buttonStates, setButtonStates] = useState<ButtonState>({
-    power: battery.heaterStatus === 1,
-    nfc: false,
-    heater: battery.heaterStatus === 1,
-    charger: false,
-    ota: false,
-  });
   const [otaExpanded, setOtaExpanded] = useState(false);
 
-  // 同步 BLE 加热状态到按钮状态
-  const heaterStateList = useMemo(() => {
-    return {
-      ...buttonStates,
-      power: battery.heaterStatus === 1,
-      heater: battery.heaterStatus === 1,
-    };
-  }, [battery.heaterStatus, buttonStates]);
-
-  const handleButtonClick = (id: ControlButton) => {
-    if (id === 'ota') {
-      setOtaExpanded((prev) => !prev);
-      return;
+  // 斷線時自動關閉 OTA 面板
+  useEffect(() => {
+    if (!isConnected) {
+      setOtaExpanded(false);
     }
+  }, [isConnected]);
 
-    setButtonStates((prev) => {
-      const updated = { ...prev, [id]: !prev[id] };
+  const statusItems = useMemo<StatusItem[]>(() => [
+    { id: 'power',   label: 'Power',   icon: powerOutline,          active: battery.heaterStatus === 1 },
+    { id: 'nfc',     label: 'NFC',     icon: cardOutline,            active: false },
+    { id: 'heater',  label: 'Heater',  icon: flameOutline,           active: battery.heaterStatus === 1 },
+    { id: 'charger', label: 'Charger', icon: batteryChargingOutline, active: false },
+    { id: 'ota',     label: isScanning ? 'Scanning...' : isConnected ? 'Bluetooth ON' : 'Bluetooth OFF', icon: bluetoothOutline, active: isConnected, scanning: isScanning },
+  ], [battery.heaterStatus, otaExpanded, isConnected, isScanning]);
 
-      if (id === 'power') onPowerToggle(!prev.power);
-      if (id === 'heater') onHeaterToggle(!prev.heater);
-
-      return updated;
-    });
+  const handleBluetoothClick = () => {
+    if (isConnected) {
+      setOtaExpanded((prev) => !prev);
+    } else {
+      onScan();
+    }
   };
 
   return (
     <div className="control-panel">
+      {/* 純顯示狀態列 */}
       <div className="control-button-list">
-        {buttonConfigs.map((button) => (
-          <button
-            key={button.id} //
-            className={`control-button ${
-              (button.id === 'power' || button.id === 'heater'
-                ? heaterStateList[button.id]
-                : buttonStates[button.id]) ||
-              (button.id === 'ota' && otaExpanded)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => handleButtonClick(button.id)}
-            disabled={button.id === 'power' || button.id === 'heater'}
+        {statusItems.map((item) => (
+          <div
+            key={item.id}
+            className={`control-button ${item.active ? 'active' : ''} ${item.scanning ? 'scanning' : ''}`}
           >
-            <IonIcon icon={button.icon} className="control-button-icon"></IonIcon>
-            <span className="control-button-label">{button.label}</span>
-          </button>
+            <IonIcon icon={item.icon} className="control-button-icon" />
+            <span className="control-button-label">{item.label}</span>
+          </div>
         ))}
       </div>
 
+      {/* Bluetooth 動作按鈕 */}
+      <button
+        className={`bluetooth-action-button ${isConnected ? 'active' : ''}`}
+        onClick={handleBluetoothClick}
+      >
+        <IonIcon icon={bluetoothOutline} className="control-button-icon" />
+        <span className="control-button-label">
+          {isConnected ? 'Firmware OTA ' : 'SCAN Bluetooth'}
+        </span>
+      </button>
+
+      {/* OTA 面板（連線後展開） */}
       {otaExpanded && (
         <div className="ota-section">
           <OtaPage

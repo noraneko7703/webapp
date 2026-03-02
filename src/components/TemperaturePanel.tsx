@@ -25,6 +25,12 @@ function formatTime(totalSeconds: number): string {
   return `${minutes}:${seconds}`;
 }
 
+function getTempColor(temp: number): string {
+  if (temp >= 120) return '#ff3b30';
+  if (temp >= 80) return '#ff9500';
+  return '#1c1c1e';
+}
+
 export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
   temperature,
   elapsedTime,
@@ -37,43 +43,50 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
 
   return (
     <div className="temperature-panel">
-      <div className="temp-readouts">
-        <div className="temp-display">
-          <span className="temp-value">{Math.round(temperature)}</span>
+      <div className="temp-hero">
+        <span className="temp-label">溫度</span>
+        <div className="temp-main">
+          <span className="temp-value" style={{ color: getTempColor(temperature) }}>
+            {Math.round(temperature)}
+          </span>
           <span className="temp-unit">&deg;C</span>
         </div>
-        <div className="temp-display">
-          <span className="temp-value">{formatTime(elapsedTime)}</span>
-        </div>
+        <div className="temp-timer">{formatTime(elapsedTime)}</div>
       </div>
       <div className="temp-chart-container">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid, #e0e0e0)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid, #e5e5ea)" />
             <XAxis
               dataKey="index"
-              tick={{ fontSize: 14 }}
-              stroke="var(--chart-axis, #999)"
+              tick={{ fontSize: 12, fill: 'var(--chart-axis, #aeaeb2)' }}
+              stroke="var(--chart-axis, #aeaeb2)"
+              axisLine={false}
+              tickLine={false}
             />
             <YAxis
               domain={[0, 160]}
-              tick={{ fontSize: 14 }}
-              stroke="var(--chart-axis, #999)"
-              unit="°C"
+              tick={{ fontSize: 12, fill: 'var(--chart-axis, #aeaeb2)' }}
+              stroke="var(--chart-axis, #aeaeb2)"
+              axisLine={false}
+              tickLine={false}
+              unit="°"
             />
             <Tooltip
-              formatter={(value: number) => [`${value} °C`, 'Temperature']}
+              formatter={(value: number | undefined) => [`${value ?? '--'} °C`, '溫度']}
               contentStyle={{
-                background: 'var(--ion-card-background, #fff)',
-                border: '1px solid var(--ion-border-color, #e0e0e0)',
-                borderRadius: '8px',
+                background: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                fontSize: '13px',
               }}
             />
             <Line
               type="monotone"
               dataKey="temperature"
-              stroke="#eb445a"
-              strokeWidth={2}
+              stroke="#ff3b30"
+              strokeWidth={2.5}
               dot={false}
               isAnimationActive={false}
             />

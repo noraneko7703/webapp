@@ -2,46 +2,64 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--ion-card-background, #fff);
-  border-radius: 12px;
-  padding: 16px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 24px 16px;
   box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
-.temp-readouts {
+.temp-hero {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0 16px;
 }
 
-.temp-display {
-  flex: 1;
+.temp-label {
+  font-size: 48px;
+  font-weight: 500;
+  color: #aeaeb2;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.temp-main {
   display: flex;
   align-items: baseline;
-  justify-content: center;
-  background: var(--ion-color-step-50, #f5f5f5);
-  border-radius: 8px;
-  padding: 10px 14px;
-  border: 1px solid var(--ion-border-color, #e0e0e0);
+  gap: 4px;
 }
 
 .temp-value {
-  font-size: 34px;
+  font-size: 100px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--ion-text-color);
+  line-height: 1;
+  letter-spacing: -2px;
+  transition: color 0.4s;
 }
 
 .temp-unit {
-  font-size: 18px;
+  font-size: 48px;
+  font-weight: 300;
+  color: #aeaeb2;
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+.temp-timer {
+  font-size: 100px;
   font-weight: 400;
-  margin-left: 4px;
-  color: var(--ion-color-medium);
+  font-variant-numeric: tabular-nums;
+  color: #8e8e93;
+  letter-spacing: 3px;
 }
 
 .temp-chart-container {
   flex: 1;
-  min-height: 200px;
+  min-height: 160px;
   min-width: 0;
   width: 100%;
   position: relative;
@@ -49,14 +67,14 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --chart-grid: #333;
-    --chart-axis: #888;
+    --chart-grid: #2c2c2e;
+    --chart-axis: #636366;
   }
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --chart-grid: #e0e0e0;
-    --chart-axis: #999;
+    --chart-grid: #e5e5ea;
+    --chart-axis: #aeaeb2;
   }
 }
