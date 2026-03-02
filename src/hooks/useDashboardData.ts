@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { BatteryInfo, TemperatureData } from '../types/ble';
 
 const MOCK_UPDATE_INTERVAL_MS = 1000;
-const MAX_HISTORY_POINTS = 300;
+const MAX_HISTORY_POINTS = 1500;
 
 /**
  * 解析 BLE Battery Notification (12 bytes, Little-Endian)

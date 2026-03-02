@@ -1,11 +1,12 @@
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
+  ReferenceLine,
 } from 'recharts';
 import { TemperatureData } from '../types/ble';
 import './TemperaturePanel.css';
@@ -25,6 +26,24 @@ function formatTime(totalSeconds: number): string {
   return `${minutes}:${seconds}`;
 }
 
+function YAxisTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
+  const val = payload?.value ?? 0;
+  const is110 = val === 110;
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor="end"
+      fill={is110 ? '#ff3b30' : 'var(--chart-axis, #aeaeb2)'}
+      fontWeight={is110 ? 700 : 400}
+      fontSize={is110 ? 40 : 30}
+    >
+      {val}°
+    </text>
+  );
+}
+
 function getTempColor(temp: number): string {
   if (temp >= 120) return '#ff3b30';
   if (temp >= 80) return '#ff9500';
@@ -36,10 +55,14 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
   elapsedTime,
   temperatureHistory,
 }) => {
-  const chartData = temperatureHistory.map((d, i) => ({
-    index: i,
-    temperature: Math.round(d.temperature * 10) / 10,
-  }));
+  const maxX = Math.max(12, temperatureHistory.length > 0 ? temperatureHistory.length - 1 : 0);
+
+  const chartData = temperatureHistory.length > 0
+    ? temperatureHistory.map((d, i) => ({
+        index: i,
+        temperature: Math.round(d.temperature * 10) / 10,
+      }))
+    : [{ index: 0, temperature: 0 }, { index: maxX, temperature: 0 }];
 
   return (
     <div className="temperature-panel">
@@ -58,18 +81,21 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
       </div>
       <div className="temp-chart-container">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
+          <AreaChart data={chartData} margin={{ top: 50, right: 50, left: 50, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid, #e5e5ea)" />
             <XAxis
               dataKey="index"
-              tick={{ fontSize: 12, fill: 'var(--chart-axis, #aeaeb2)' }}
+              type="number"
+              domain={[0, maxX]}
+              tick={{ fontSize: 30, fill: 'var(--chart-axis, #aeaeb2)' }}
               stroke="var(--chart-axis, #aeaeb2)"
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               domain={[0, 160]}
-              tick={{ fontSize: 12, fill: 'var(--chart-axis, #aeaeb2)' }}
+              ticks={[0, 40, 80, 110, 120, 160]}
+              tick={<YAxisTick />}
               stroke="var(--chart-axis, #aeaeb2)"
               axisLine={false}
               tickLine={false}
@@ -85,15 +111,22 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
                 fontSize: '13px',
               }}
             />
-            <Line
+            <ReferenceLine
+              y={110}
+              stroke="#ff3b30"
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+            />
+            <Area
               type="monotone"
               dataKey="temperature"
-              stroke="#ff3b30"
+              stroke="#ff9500"
               strokeWidth={2.5}
+              fill="rgba(255, 149, 0, 0.12)"
               dot={false}
               isAnimationActive={false}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
     </div>
