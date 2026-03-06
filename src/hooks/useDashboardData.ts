@@ -37,14 +37,14 @@ export function parseBatteryNotification(value: DataView): BatteryInfo {
 export function useDashboardData() {
   const [isHeaterActive, setIsHeaterActive] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [temperature, setTemperature] = useState(25);
+  const [temperature, setTemperature] = useState(0);
   const [battery, setBattery] = useState<BatteryInfo>({
     voltage: 0,
     averageCurrent: 0,
     stateOfCharge: 0,
     batteryTemp: 0,
     heaterStatus: 0,
-    heaterTemperature: 25,
+    heaterTemperature: 0,
     nfcUid: '',
   });
   const [temperatureHistory, setTemperatureHistory] = useState<TemperatureData[]>([]);
@@ -80,12 +80,14 @@ export function useDashboardData() {
       intervalRef.current = null;
     }
 
-    // Always update temperature history when data is received from BLE device (0x8024)
-    const now = Math.floor(Date.now() / 1000);
-    setTemperatureHistory((hist) => {
-      const updated = [...hist, { timestamp: now, temperature: info.heaterTemperature }];
-      return updated.slice(-MAX_HISTORY_POINTS);
-    });
+    // Only update temperature history when heater is active
+    if (isHeaterActiveRef.current) {
+      const now = Math.floor(Date.now() / 1000);
+      setTemperatureHistory((hist) => {
+        const updated = [...hist, { timestamp: now, temperature: info.heaterTemperature }];
+        return updated.slice(-MAX_HISTORY_POINTS);
+      });
+    }
   }, []);
 
   const startHeater = useCallback(() => {
@@ -99,6 +101,16 @@ export function useDashboardData() {
   const stopHeater = useCallback(() => {
     isHeaterActiveRef.current = false;
     setIsHeaterActive(false);
+  }, []);
+
+  const resetData = useCallback(() => {
+    isHeaterActiveRef.current = false;
+    previousHeaterStatusRef.current = 0;
+    setIsHeaterActive(false);
+    setElapsedTime(0);
+    setTemperature(0);
+    setTemperatureHistory([]);
+    setBattery({ voltage: 0, averageCurrent: 0, stateOfCharge: 0, batteryTemp: 0, heaterStatus: 0, heaterTemperature: 0, nfcUid: '' });
   }, []);
 
   useEffect(() => {
@@ -128,5 +140,6 @@ export function useDashboardData() {
     updateBattery,
     startHeater,
     stopHeater,
+    resetData,
   };
 }

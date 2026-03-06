@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IonCard, IonCardContent } from '@ionic/react';
 import { OtaType, UploadProgress } from '../types/ble';
 import './OtaPage.css';
@@ -24,7 +24,23 @@ export const OtaPage: React.FC<OtaPageProps> = ({
   const [otaFile, setOtaFile] = useState<ArrayBuffer | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [fileSize, setFileSize] = useState<number>(0);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevIsUploading = useRef(false);
+
+  useEffect(() => {
+    if (prevIsUploading.current && !isUploading && progress.percent === 100) {
+      setCountdown(10);
+    }
+    prevIsUploading.current = isUploading;
+  }, [isUploading, progress.percent]);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (countdown === 0) { window.location.reload(); return; }
+    const t = setTimeout(() => setCountdown((c) => (c ?? 1) - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
@@ -48,10 +64,16 @@ export const OtaPage: React.FC<OtaPageProps> = ({
   return (
     <IonCard className="ota-card">
       <IonCardContent>
-        {isUploading ? (
+        {countdown !== null ? (
+          <div className="ota-done-wrap">
+            <div className="ota-done-icon">✅</div>
+            <div className="ota-done-title">Update Complete</div>
+            <div className="ota-done-countdown">Refreshing in {countdown}s</div>
+          </div>
+        ) : isUploading ? (
           <div className="ota-progress-wrap">
             <div className="ota-progress-header">
-              <span className="ota-progress-label">更新中...</span>
+              <span className="ota-progress-label">Updating...</span>
               <span className="ota-progress-speed">{progress.speed.toFixed(1)} kB/s</span>
             </div>
             <div className="ota-progress-bar-track">
@@ -86,7 +108,6 @@ export const OtaPage: React.FC<OtaPageProps> = ({
               <p className="ota-drop-title">
                 {otaFile ? 'Firmware Uploaded' : 'Select a Firmware File'}
               </p>
-              {!otaFile && <p className="ota-drop-hint">.bin</p>}
             </div>
 
             {otaFile && (
@@ -99,7 +120,7 @@ export const OtaPage: React.FC<OtaPageProps> = ({
 
             {otaFile && (
               <button className="ota-start-btn" onClick={handleStartClick}>
-                開始更新
+                Start
               </button>
             )}
           </>

@@ -36,11 +36,24 @@
   50%       { box-shadow: 0 0 0 6px rgba(52, 199, 89, 0.12); }
 }
 
+.device-name-block {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .device-name {
   font-size: 30px;
   font-weight: 600;
   color: #1c1c1e;
   letter-spacing: -0.3px;
+}
+
+.device-sub {
+  font-size: 25px;
+  color: #8e8e93;
+  letter-spacing: 0.1px;
 }
 
 .app-header-right {

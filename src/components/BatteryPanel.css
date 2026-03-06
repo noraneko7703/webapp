@@ -17,14 +17,14 @@
 }
 
 .battery-title {
-  font-size: 40px;
+  font-size: 30px;
   font-weight: 600;
   color: #1c1c1e;
   line-height: 1.2;
 }
 
 .battery-subtitle {
-  font-size: 28px;
+  font-size: 25px;
   color: #aeaeb2;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .battery-soc-value {
-  font-size: 70px;
+  font-size: 60px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -76,14 +76,14 @@
 }
 
 .battery-soc-unit {
-  font-size: 38px;
+  font-size: 30px;
   font-weight: 400;
   color: #aeaeb2;
 }
 
 /* 充電狀態標籤 */
 .battery-soc-status {
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 500;
 }
 
@@ -113,19 +113,19 @@
 }
 
 .battery-row-label {
-  font-size: 34px;
+  font-size: 30px;
   color: #3c3c43;
   font-weight: 500;
 }
 
 .battery-row-sublabel {
-  font-size: 34px;
+  font-size: 30px;
   color: #aeaeb2;
   font-weight: 400;
 }
 
 .battery-row-value {
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: #1c1c1e;

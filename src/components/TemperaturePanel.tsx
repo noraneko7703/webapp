@@ -66,6 +66,7 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
 
   return (
     <div className="temperature-panel">
+      <h2 className="panel-title">Temperature</h2>
       <div className="temp-hero">
         <div className="temp-card">
           <div className="temp-main">
@@ -103,13 +104,13 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
               unit="°"
             />
             <Tooltip
-              formatter={(value: number | undefined) => [`${value ?? '--'} °C`, '溫度']}
+              formatter={(value: number | undefined) => [`${value ?? '--'} °C`, 'temperature']}
               contentStyle={{
                 background: '#ffffff',
                 border: 'none',
                 borderRadius: '10px',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                fontSize: '13px',
+                fontSize: '20px',
               }}
             />
             <ReferenceLine

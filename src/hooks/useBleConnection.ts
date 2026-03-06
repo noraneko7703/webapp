@@ -30,6 +30,7 @@ interface UseBleConnectionReturn {
   ) => Promise<void>;
   disconnect: () => Promise<void>;
   clearDisconnectAlert: () => void;
+  expectDisconnect: () => void;
 }
 
 const initialDeviceInfo: DeviceInfo = {
@@ -52,6 +53,10 @@ export function useBleConnection(): UseBleConnectionReturn {
 
   const clearDisconnectAlert = useCallback(() => {
     setDisconnectedUnexpectedly(false);
+  }, []);
+
+  const expectDisconnect = useCallback(() => {
+    userDisconnectRef.current = true;
   }, []);
 
   const onDisconnect = useCallback((deviceId: string) => {
@@ -99,6 +104,13 @@ export function useBleConnection(): UseBleConnectionReturn {
           services: [BLE_SERVICE_UUID],
           optionalServices: [numberToUUID(DIS_SERVICE_UUID)],
         });
+
+        // 清除 browser 可能快取的舊 GATT 狀態，避免第一次連線失敗
+        try {
+          await BleClient.disconnect(clientDevice.deviceId);
+        } catch {
+          // 正常情況 - 裝置本來就沒連線
+        }
 
         await BleClient.connect(clientDevice.deviceId, onDisconnect);
 
@@ -168,7 +180,11 @@ export function useBleConnection(): UseBleConnectionReturn {
   const disconnect = useCallback(async () => {
     userDisconnectRef.current = true;
     if (deviceRef.current) {
-      await BleClient.disconnect(deviceRef.current.deviceId);
+      try {
+        await BleClient.disconnect(deviceRef.current.deviceId);
+      } catch (e) {
+        console.log('BleClient.disconnect error (may already be disconnected):', e);
+      }
       deviceRef.current = null;
     }
     setIsConnected(false);
@@ -186,5 +202,6 @@ export function useBleConnection(): UseBleConnectionReturn {
     connect,
     disconnect,
     clearDisconnectAlert,
+    expectDisconnect,
   };
 }

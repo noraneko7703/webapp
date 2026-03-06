@@ -72,7 +72,7 @@ export const BatteryPanel: React.FC<BatteryPanelProps> = ({ battery }) => {
   return (
     <div className="battery-panel">
       <div className="battery-title-row">
-        <span className="battery-title">Battery</span>
+        <span className="battery-title">Battery Info</span>
         <span className="battery-subtitle">Li-ion 2830mAh/10.89Wh</span>
       </div>
 

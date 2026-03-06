@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   IonContent,
   IonPage,
@@ -24,6 +24,7 @@ const HomePage: React.FC = () => {
     connect,
     disconnect,
     clearDisconnectAlert,
+    expectDisconnect,
   } = useBleConnection();
 
   const {
@@ -38,7 +39,28 @@ const HomePage: React.FC = () => {
     resetStatus,
   } = useFirmwareUpload();
 
-  const { data: dashboardData, updateBattery, startHeater, stopHeater } = useDashboardData();
+  const { data: dashboardData, updateBattery, startHeater, stopHeater, resetData } = useDashboardData();
+  const wasConnectedRef = useRef(false);
+  const otaCompletedRef = useRef(false);
+  const prevIsUploadingRef = useRef(false);
+
+  // 偵測 OTA 完成：讓 OtaPage 的 10 秒倒數跑完再 reload，而不是立即 reload
+  useEffect(() => {
+    if (prevIsUploadingRef.current && !isUploading && progress.percent === 100) {
+      otaCompletedRef.current = true;
+    }
+    prevIsUploadingRef.current = isUploading;
+  }, [isUploading, progress.percent]);
+
+  useEffect(() => {
+    if (isConnected) {
+      wasConnectedRef.current = true;
+      otaCompletedRef.current = false;
+    } else if (wasConnectedRef.current && !otaCompletedRef.current) {
+      resetData();
+      window.location.reload();
+    }
+  }, [isConnected, resetData]);
 
   const handleBatteryNotification = useCallback(
     (value: DataView) => {
@@ -81,10 +103,11 @@ const HomePage: React.FC = () => {
     async (otaType: OtaType, file: ArrayBuffer) => {
       if (!deviceRef.current) return;
 
+      expectDisconnect(); // OTA 後裝置會重開機斷線，預先標記為預期斷線以避免 Alert
       await startUpload(deviceRef.current.deviceId, otaType, file);
       await disconnect();
     },
-    [deviceRef, startUpload, disconnect]
+    [deviceRef, startUpload, disconnect, expectDisconnect]
   );
 
   return (
@@ -100,9 +123,16 @@ const HomePage: React.FC = () => {
       <div className="app-header">
         <div className="app-header-left">
           <span className={`connection-dot ${isConnected ? 'connected' : ''}`} />
-          <span className="device-name">
-            {isConnected ? deviceInfo.name : 'Searching for device…'}
-          </span>
+          <div className="device-name-block">
+            <span className="device-name">
+              {isConnected ? deviceInfo.name : 'Please scan to connect the device.'}
+            </span>
+            {isConnected && (deviceInfo.manufacturer || deviceInfo.swVersion) && (
+              <span className="device-sub">
+                {[deviceInfo.manufacturer, deviceInfo.swVersion].filter(Boolean).join(' Firmware version: ')}
+              </span>
+            )}
+          </div>
         </div>
         <div className="app-header-right">
           <span className="app-version">{APP_VERSION}</span>

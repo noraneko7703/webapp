@@ -4,7 +4,7 @@ import {
   powerOutline,
   cardOutline,
   flameOutline,
-  batteryChargingOutline,
+  flashOutline,
   bluetoothOutline,
 } from 'ionicons/icons';
 import { OtaType, UploadProgress, BatteryInfo } from '../types/ble';
@@ -40,20 +40,23 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   const [otaExpanded, setOtaExpanded] = useState(false);
 
-  // 斷線時自動關閉 OTA 面板
+  // 斷線時自動關閉 OTA 面板（OTA 完成後斷線除外，讓倒數計時跑完）
   useEffect(() => {
-    if (!isConnected) {
+    if (!isConnected && progress.percent !== 100) {
       setOtaExpanded(false);
     }
-  }, [isConnected]);
+  }, [isConnected, progress.percent]);
+
+  const isCharging = battery.averageCurrent > 0;
+  const hasNfc = battery.nfcUid.length > 0 && !/^0+$/.test(battery.nfcUid);
 
   const statusItems = useMemo<StatusItem[]>(() => [
     { id: 'power',   label: battery.heaterStatus === 1 ? 'Power ON'   : 'Power OFF',   icon: powerOutline,          active: battery.heaterStatus === 1 },
-    { id: 'nfc',     label: 'NFC OFF',                                                  icon: cardOutline,            active: false },
+    { id: 'nfc',     label: hasNfc ? 'NFC ON' : 'NFC OFF',                              icon: cardOutline,            active: hasNfc },
     { id: 'heater',  label: battery.heaterStatus === 1 ? 'Heater ON'  : 'Heater OFF',  icon: flameOutline,           active: battery.heaterStatus === 1 },
-    { id: 'charger', label: 'Charger OFF',                                              icon: batteryChargingOutline, active: false },
+    { id: 'charger', label: isCharging ? 'Charger ON' : 'Charger OFF',                 icon: flashOutline,           active: isCharging },
     { id: 'ota',     label: isScanning ? 'Scanning...' : isConnected ? 'Bluetooth ON' : 'Bluetooth OFF', icon: bluetoothOutline, active: isConnected, scanning: isScanning },
-  ], [battery.heaterStatus, otaExpanded, isConnected, isScanning]);
+  ], [battery.heaterStatus, hasNfc, isCharging, isConnected, isScanning]);
 
   const handleBluetoothClick = () => {
     if (isConnected) {
@@ -65,6 +68,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
   return (
     <div className="control-panel">
+      <h2 className="panel-title">Status</h2>
       {/* 純顯示狀態列 */}
       <div className="control-button-list">
         {statusItems.map((item) => (
