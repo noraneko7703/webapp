@@ -8,7 +8,13 @@
   background: #f2f2f7;
 }
 
-.dashboard-left,
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
 .dashboard-center {
   min-height: 0;
 }

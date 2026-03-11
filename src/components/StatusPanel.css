@@ -1,0 +1,80 @@
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.panel-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: #1c1c1e;
+  margin: 0 0 4px;
+  letter-spacing: 0.3px;
+}
+
+/* iOS grouped list 容器 */
+.control-button-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e5e5ea;
+}
+
+/* 每一列：iOS list row 樣式 */
+.control-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: #ffffff;
+  color: #8e8e93;
+  border-bottom: 0.5px solid #e5e5ea;
+  cursor: default;
+  transition: background 0.2s, color 0.2s;
+  user-select: none;
+}
+
+.control-button:last-child {
+  border-bottom: none;
+}
+
+/* Active：淡藍底 + 藍色文字 */
+.control-button.active {
+  background: #eef4ff;
+  color: #3880ff;
+}
+
+/* Scanning：淡橘底 + 橘色文字 */
+.control-button.scanning {
+  background: #fff5e6;
+  color: #ff9500;
+  animation: scanning-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes scanning-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.control-button-icon {
+  font-size: 50px;
+  flex-shrink: 0;
+}
+
+.control-button-label {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+

@@ -28,7 +28,7 @@ function formatTime(totalSeconds: number): string {
 
 function YAxisTick({ x, y, payload }: { x?: number; y?: number; payload?: { value: number } }) {
   const val = payload?.value ?? 0;
-  const is110 = val === 110;
+  const is110 = val === 130;
   return (
     <text
       x={x}
@@ -95,7 +95,7 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
             />
             <YAxis
               domain={[0, 160]}
-              ticks={[0, 40, 80, 110, 120, 160]}
+              ticks={[0, 40, 80, 120, 130, 160]}
               tick={<YAxisTick />}
               minTickGap={-1}
               stroke="var(--chart-axis, #aeaeb2)"
@@ -114,7 +114,7 @@ export const TemperaturePanel: React.FC<TemperaturePanelProps> = ({
               }}
             />
             <ReferenceLine
-              y={110}
+              y={130}
               stroke="#ff3b30"
               strokeDasharray="4 4"
               strokeWidth={1.5}

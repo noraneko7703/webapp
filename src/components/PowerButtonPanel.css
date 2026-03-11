@@ -1,88 +1,99 @@
-.control-panel {
+.power-button-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 100%;
   background: #ffffff;
   border-radius: 20px;
-  padding: 20px;
+  padding: 20px 24px;
   box-sizing: border-box;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
-.panel-title {
+.power-panel-title {
   font-size: 30px;
   font-weight: 700;
   color: #1c1c1e;
-  margin: 0 0 4px;
+  margin: 0;
   letter-spacing: 0.3px;
+  align-self: flex-start;
 }
 
 /* iOS grouped list 容器 */
-.control-button-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+.power-toggle-list {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid #e5e5ea;
 }
 
-/* 每一列：iOS list row 樣式 */
-.control-button {
+.power-toggle-row {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
   gap: 14px;
   padding: 16px 20px;
   background: #ffffff;
   color: #8e8e93;
-  border-bottom: 0.5px solid #e5e5ea;
-  cursor: default;
   transition: background 0.2s, color 0.2s;
-  user-select: none;
 }
 
-.control-button:last-child {
-  border-bottom: none;
-}
-
-/* Active：淡藍底 + 藍色文字 */
-.control-button.active {
-  background: #eef4ff;
+.power-toggle-row.active {
+  background: #eff6ff;
   color: #3880ff;
 }
 
-/* Scanning：淡橘底 + 橘色文字 */
-.control-button.scanning {
-  background: #fff5e6;
-  color: #ff9500;
-  animation: scanning-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes scanning-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-.control-button-icon {
+.power-toggle-icon {
   font-size: 50px;
   flex-shrink: 0;
 }
 
-.control-button-label {
+.power-toggle-label {
   font-size: 30px;
   font-weight: 600;
   letter-spacing: 0.1px;
-  white-space: nowrap;
+  flex: 1;
 }
 
-/* Bluetooth 主動作按鈕 */
+/* Toggle track */
+.power-toggle {
+  position: relative;
+  width: 90px;
+  height: 50px;
+  border-radius: 50px;
+  background: #e5e5ea;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.power-toggle.active {
+  background: #3880ff;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Knob */
+.power-toggle-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  transition: transform 0.25s ease;
+}
+
+.power-toggle.active .power-toggle-knob {
+  transform: translateX(40px);
+}
+
+/* Bluetooth 動作按鈕 */
 .bluetooth-action-button {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  text-align: left;
   gap: 10px;
   width: 100%;
   padding: 17px 20px;
@@ -106,10 +117,6 @@
 .bluetooth-action-button:active {
   opacity: 0.85;
   transform: scale(0.98);
-}
-
-.bluetooth-action-button .control-button-icon {
-  font-size: 30px;
 }
 
 .ota-section {

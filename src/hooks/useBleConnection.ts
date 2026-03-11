@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { BleClient, numberToUUID } from '@capacitor-community/bluetooth-le';
+import { BleClient, numberToUUID, numbersToDataView } from '@capacitor-community/bluetooth-le';
 import { DeviceInfo, BleDeviceRef } from '../types/ble';
 import { arrayBufferToString } from '../utils/crc';
 import {
@@ -7,6 +7,7 @@ import {
   BLE_FIRMWARE_CHAR_UUID,
   BLE_COMMAND_CHAR_UUID,
   BLE_BATTERY_CHAR_UUID,
+  BLE_HEATER_CHAR_UUID,
   DIS_SERVICE_UUID,
   DIS_MODEL_NUMBER_UUID,
   DIS_SERIAL_NUMBER_UUID,
@@ -31,6 +32,7 @@ interface UseBleConnectionReturn {
   disconnect: () => Promise<void>;
   clearDisconnectAlert: () => void;
   expectDisconnect: () => void;
+  sendHeaterCommand: (active: boolean) => Promise<void>;
 }
 
 const initialDeviceInfo: DeviceInfo = {
@@ -177,6 +179,16 @@ export function useBleConnection(): UseBleConnectionReturn {
     [onDisconnect]
   );
 
+  const sendHeaterCommand = useCallback(async (active: boolean) => {
+    if (!deviceRef.current) return;
+    await BleClient.write(
+      deviceRef.current.deviceId,
+      BLE_SERVICE_UUID,
+      BLE_HEATER_CHAR_UUID,
+      numbersToDataView([active ? 0x01 : 0x00])
+    );
+  }, []);
+
   const disconnect = useCallback(async () => {
     userDisconnectRef.current = true;
     if (deviceRef.current) {
@@ -203,5 +215,6 @@ export function useBleConnection(): UseBleConnectionReturn {
     disconnect,
     clearDisconnectAlert,
     expectDisconnect,
+    sendHeaterCommand,
   };
 }

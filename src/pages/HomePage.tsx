@@ -25,6 +25,7 @@ const HomePage: React.FC = () => {
     disconnect,
     clearDisconnectAlert,
     expectDisconnect,
+    sendHeaterCommand,
   } = useBleConnection();
 
   const {
@@ -71,14 +72,15 @@ const HomePage: React.FC = () => {
   );
 
   const handleHeaterToggle = useCallback(
-    (active: boolean) => {
+    async (active: boolean) => {
+      await sendHeaterCommand(active);
       if (active) {
         startHeater();
       } else {
         stopHeater();
       }
     },
-    [startHeater, stopHeater]
+    [sendHeaterCommand, startHeater, stopHeater]
   );
 
   const handleScanClick = useCallback(async () => {

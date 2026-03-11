@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { BatteryInfo, TemperatureData } from '../types/ble';
 
 const MOCK_UPDATE_INTERVAL_MS = 1000;
-const MAX_HISTORY_POINTS = 3000;
+const MAX_HISTORY_POINTS = 6000;
 
 /**
  * 解析 BLE Battery Notification (12 bytes, Little-Endian)
@@ -20,6 +20,27 @@ export function parseBatteryNotification(value: DataView): BatteryInfo {
   const batteryTemp = value.getUint16(6, true) / 10;
   const heaterStatus = value.getUint16(8, true);
   const heaterTemperature = value.getUint16(10, true) / 10;
+
+  // Debug: log raw bytes to diagnose temperature=0 issue
+  // const raw: string[] = [];
+  // for (let i = 0; i < value.byteLength; i++) {
+  //   raw.push(value.getUint8(i).toString(16).padStart(2, '0'));
+  // }
+  // console.group(`%c[BLE Battery] ${value.byteLength}B packet`, 'color:#ff9500;font-weight:bold');
+  // console.log(`RAW bytes : ${raw.join(' ')}`);
+  // console.log(`[0-1]  voltage          : ${voltage} mV`);
+  // console.log(`[2-3]  averageCurrent   : ${averageCurrent} mA`);
+  // console.log(`[4-5]  stateOfCharge    : ${stateOfCharge} %`);
+  // console.log(`[6-7]  batteryTemp      : ${batteryTemp} °C  (raw uint16=${value.getUint16(6, true)})`);
+  // console.log(`[8-9]  heaterStatus     : ${heaterStatus}  (0=off, 1=on)`);
+  // console.log(`[10-11] heaterTemp      : ${heaterTemperature} °C  (raw uint16=${value.getUint16(10, true)})`);
+  // if (value.byteLength >= 14) {
+  //   console.log(`[12-13] bytes 12-13   : ${value.getUint8(12).toString(16).padStart(2,'0')} ${value.getUint8(13).toString(16).padStart(2,'0')}  (uint16=${value.getUint16(12, true)})`);
+  // }
+  // if (value.byteLength >= 16) {
+  //   console.log(`[14-15] bytes 14-15   : ${value.getUint8(14).toString(16).padStart(2,'0')} ${value.getUint8(15).toString(16).padStart(2,'0')}  (uint16=${value.getUint16(14, true)})`);
+  // }
+  // console.groupEnd();
 
   // [12-19] NFC-V UID (8 bytes)
   let nfcUid = '';
@@ -74,8 +95,8 @@ export function useDashboardData() {
       setIsHeaterActive(false);
     }
 
-    // Stop timer when temperature reaches 110°C
-    if (info.heaterTemperature >= 110 && intervalRef.current) {
+    // Stop timer when temperature reaches 130°C
+    if (info.heaterTemperature >= 130 && intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }

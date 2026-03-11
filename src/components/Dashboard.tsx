@@ -1,4 +1,5 @@
-import { ControlPanel } from './ControlPanel';
+import { StatusPanel } from './StatusPanel';
+import { PowerButtonPanel } from './PowerButtonPanel';
 import { TemperaturePanel } from './TemperaturePanel';
 import { BatteryPanel } from './BatteryPanel';
 import { NfcPanel } from './NfcPanel';
@@ -21,6 +22,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onStartUpload,
   isUploading,
   progress,
+  onHeaterToggle,
   isConnected,
   isScanning,
   onScan,
@@ -28,14 +30,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="dashboard-grid">
       <div className="dashboard-left">
-        <ControlPanel
-          isUploading={isUploading}
-          progress={progress}
-          onStartUpload={onStartUpload}
-          battery={data.battery}
+        <PowerButtonPanel
+          heaterStatus={data.battery.heaterStatus}
+          onToggle={onHeaterToggle}
           isConnected={isConnected}
           isScanning={isScanning}
           onScan={onScan}
+          isUploading={isUploading}
+          progress={progress}
+          onStartUpload={onStartUpload}
+        />
+        <StatusPanel
+          battery={data.battery}
+          isConnected={isConnected}
+          isScanning={isScanning}
         />
       </div>
       <div className="dashboard-center">
