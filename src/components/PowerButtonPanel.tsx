@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
-import { powerOutline, bluetoothOutline } from 'ionicons/icons';
+import { powerOutline, cloudDownloadOutline} from 'ionicons/icons';
 import { OtaType, UploadProgress } from '../types/ble';
 import { OtaPage } from '../pages/OtaPage';
 import './PowerButtonPanel.css';
@@ -50,7 +50,7 @@ export const PowerButtonPanel: React.FC<PowerButtonPanelProps> = ({
         className={`bluetooth-action-button ${isConnected ? 'active' : ''}`}
         onClick={handleBluetoothClick}
       >
-        <IonIcon icon={bluetoothOutline} className="power-toggle-icon" />
+        <IonIcon icon={cloudDownloadOutline} className="power-toggle-icon" />
         <span className="power-toggle-label">
           {isScanning ? 'Scanning...' : isConnected ? 'Firmware OTA' : 'SCAN Bluetooth'}
         </span>

@@ -6,11 +6,16 @@
   border-radius: 20px;
   padding: 24px;
   box-sizing: border-box;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
   gap: 16px;
+  transition: box-shadow 200ms ease;
 }
 
-/* 標題列 */
+.battery-panel:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* Title row */
 .battery-title-row {
   display: flex;
   flex-direction: column;
@@ -18,20 +23,23 @@
 
 .battery-title {
   font-size: 30px;
-  font-weight: 600;
-  color: #1c1c1e;
+  font-weight: 700;
+  color: #0F172A;
   line-height: 1.2;
+  letter-spacing: -0.2px;
 }
 
 .battery-subtitle {
   font-size: 25px;
-  color: #aeaeb2;
+  color: #94A3B8;
+  font-weight: 400;
 }
 
-/* SOC 甜甜圈英雄卡片 - 對齊 temp-card 樣式 */
+/* SOC donut hero card */
 .battery-soc-card {
-  background: #f2f2f7;
-  border-radius: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,7 +47,7 @@
   gap: 8px;
 }
 
-/* PieChart 相對定位容器 */
+/* PieChart relative container */
 .battery-soc-chart-wrapper {
   position: relative;
   width: 200px;
@@ -49,17 +57,17 @@
   justify-content: center;
 }
 
-/* 充電時才閃爍，放電/閒置靜止 */
+/* Pulse only when charging */
 .battery-soc-chart-wrapper.is-charging .recharts-wrapper {
   animation: soc-pulse 2s ease-in-out infinite;
 }
 
 @keyframes soc-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.45; }
+  50%       { opacity: 0.5; }
 }
 
-/* 中心數字疊加 */
+/* Center value overlay */
 .battery-soc-overlay {
   position: absolute;
   display: flex;
@@ -78,16 +86,16 @@
 .battery-soc-unit {
   font-size: 30px;
   font-weight: 400;
-  color: #aeaeb2;
+  color: #94A3B8;
 }
 
-/* 充電狀態標籤 */
+/* Charging status label */
 .battery-soc-status {
   font-size: 25px;
   font-weight: 500;
 }
 
-/* 資料列 */
+/* Data rows */
 .battery-rows {
   display: flex;
   flex-direction: column;
@@ -98,8 +106,14 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 10px 0;
-  border-bottom: 1px solid #f2f2f7;
+  padding: 10px 8px;
+  border-bottom: 1px solid #F1F5F9;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.battery-row:hover {
+  background: #F8FAFC;
 }
 
 .battery-row:last-child {
@@ -114,13 +128,13 @@
 
 .battery-row-label {
   font-size: 30px;
-  color: #3c3c43;
+  color: #334155;
   font-weight: 500;
 }
 
 .battery-row-sublabel {
   font-size: 30px;
-  color: #aeaeb2;
+  color: #94A3B8;
   font-weight: 400;
 }
 
@@ -128,6 +142,12 @@
   font-size: 30px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: #1c1c1e;
+  color: #0F172A;
   text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battery-soc-chart-wrapper.is-charging .recharts-wrapper {
+    animation: none;
+  }
 }

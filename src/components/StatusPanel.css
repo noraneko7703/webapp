@@ -7,28 +7,33 @@
   border-radius: 20px;
   padding: 20px;
   box-sizing: border-box;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  transition: box-shadow 200ms ease;
+}
+
+.control-panel:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
 }
 
 .panel-title {
   font-size: 30px;
   font-weight: 700;
-  color: #1c1c1e;
+  color: #0F172A;
   margin: 0 0 4px;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.2px;
 }
 
-/* iOS grouped list 容器 */
+/* grouped list container */
 .control-button-list {
   display: flex;
   flex-direction: column;
   gap: 0;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e5e5ea;
+  border: 1px solid #E2E8F0;
 }
 
-/* 每一列：iOS list row 樣式 */
+/* Each row */
 .control-button {
   display: flex;
   flex-direction: row;
@@ -37,10 +42,11 @@
   gap: 14px;
   padding: 16px 20px;
   background: #ffffff;
-  color: #8e8e93;
-  border-bottom: 0.5px solid #e5e5ea;
+  color: #64748B;
+  border-bottom: 1px solid #F1F5F9;
+  border-left: 3px solid transparent;
   cursor: default;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.15s ease, color 0.15s ease, border-left-color 0.15s ease;
   user-select: none;
 }
 
@@ -48,22 +54,24 @@
   border-bottom: none;
 }
 
-/* Active：淡藍底 + 藍色文字 */
+/* Active: light blue bg + blue text + blue left border */
 .control-button.active {
-  background: #eef4ff;
-  color: #3880ff;
+  background: #EFF6FF;
+  color: #3B82F6;
+  border-left-color: #3B82F6;
 }
 
-/* Scanning：淡橘底 + 橘色文字 */
+/* Scanning: light amber bg + amber text + pulsing */
 .control-button.scanning {
-  background: #fff5e6;
-  color: #ff9500;
-  animation: scanning-pulse 1.2s ease-in-out infinite;
+  background: #FFF7ED;
+  color: #F97316;
+  border-left-color: #F97316;
+  animation: scanning-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes scanning-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50%       { opacity: 0.55; }
 }
 
 .control-button-icon {
@@ -78,3 +86,8 @@
   white-space: nowrap;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .control-button.scanning {
+    animation: none;
+  }
+}

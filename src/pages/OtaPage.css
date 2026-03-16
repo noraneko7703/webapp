@@ -1,7 +1,8 @@
 .ota-card {
   margin: 16px;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid #E2E8F0;
 }
 
 .ota-drop-zone {
@@ -9,63 +10,82 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 36px 24px;
-  border: 2px dashed #d1d1d6;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 40px 24px;
+  border: 2px dashed #CBD5E1;
+  border-radius: 16px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  background: #fafafa;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  background: #F8FAFC;
   text-align: center;
 }
 
 .ota-drop-zone:hover {
-  border-color: #3880ff;
-  background: rgba(56, 128, 255, 0.04);
+  border-color: #3B82F6;
+  background: #EFF6FF;
 }
 
 .ota-drop-zone.has-file {
-  border-color: #34c759;
-  background: rgba(52, 199, 89, 0.05);
+  border-color: #22C55E;
+  border-style: solid;
+  background: #F0FDF4;
+  transform: scale(1.01);
 }
 
 .ota-drop-icon {
-  font-size: 40px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #EFF6FF;
+  color: #3B82F6;
+  flex-shrink: 0;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ota-drop-zone.has-file .ota-drop-icon {
+  background: #DCFCE7;
+  color: #22C55E;
 }
 
 .ota-drop-title {
   font-size: 30px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: #0F172A;
   margin: 0;
 }
 
 .ota-drop-hint {
   font-size: 30px;
-  color: #aeaeb2;
+  color: #94A3B8;
   margin: 0;
 }
 
 .ota-file-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
-  padding: 10px 14px;
-  background: rgba(52, 199, 89, 0.1);
-  border-radius: 10px;
+  padding: 12px 16px;
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  border-radius: 12px;
 }
 
 .ota-file-icon {
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  color: #16A34A;
+  flex-shrink: 0;
 }
 
 .ota-file-name {
   flex: 1;
   font-size: 30px;
   font-weight: 500;
-  color: #1c1c1e;
+  color: #0F172A;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -73,7 +93,7 @@
 
 .ota-file-size {
   font-size: 30px;
-  color: #aeaeb2;
+  color: #64748B;
   flex-shrink: 0;
 }
 
@@ -81,48 +101,68 @@
   display: block;
   width: 100%;
   margin-top: 14px;
-  padding: 14px;
-  background: #3880ff;
+  padding: 16px;
+  background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
   color: #ffffff;
   font-size: 30px;
   font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.30);
+  transition: filter 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.ota-start-btn:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.38);
 }
 
 .ota-start-btn:active {
-  background: #2c6fd4;
   transform: scale(0.98);
+  filter: brightness(0.96);
 }
 
+/* Done state */
 .ota-done-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 40px 24px;
+  gap: 14px;
+  padding: 48px 24px;
   text-align: center;
+  animation: fade-in-up 0.4s ease;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .ota-done-icon {
-  font-size: 48px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #DCFCE7;
+  color: #16A34A;
 }
 
 .ota-done-title {
   font-size: 30px;
   font-weight: 700;
-  color: #34c759;
+  color: #16A34A;
 }
 
 .ota-done-countdown {
   font-size: 30px;
-  color: #aeaeb2;
+  color: #94A3B8;
 }
 
+/* Progress */
 .ota-progress-wrap {
   margin-top: 4px;
 }
@@ -131,38 +171,48 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .ota-progress-label {
   font-size: 30px;
   font-weight: 600;
-  color: #1c1c1e;
+  color: #0F172A;
 }
 
 .ota-progress-speed {
   font-size: 30px;
-  color: #aeaeb2;
+  color: #64748B;
 }
 
 .ota-progress-bar-track {
   width: 100%;
-  height: 8px;
-  background: #e5e5ea;
-  border-radius: 99px;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .ota-progress-bar-fill {
   height: 100%;
-  background: #3880ff;
-  border-radius: 99px;
+  background: linear-gradient(90deg, #3B82F6, #60A5FA);
+  border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .ota-progress-percent {
   text-align: right;
   font-size: 30px;
-  color: #aeaeb2;
-  margin-top: 4px;
+  color: #64748B;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ota-done-wrap {
+    animation: none;
+  }
+  .ota-drop-zone.has-file {
+    transform: none;
+  }
 }
